@@ -49,6 +49,8 @@ var getRandomImageURLForUser = function(userId, callback) {
 	var imageIndex = Math.floor(Math.random() * picturesArr.length);
 
 	var imageURL = "http://52.32.246.19:8082/pictures/" + picturesArr[imageIndex];
+
+	callback(imageURL);
 };
 
 readImageFiles();

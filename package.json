@@ -8,6 +8,6 @@
 		"multer": "*",
 		"mkdirp": "*",
 		"body-parser": "*",
-		"mongodb": "*", 
+		"mongodb": "*"
 	}
 }

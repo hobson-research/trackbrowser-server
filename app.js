@@ -4,11 +4,13 @@ var multer = require('multer');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var mongodb = require('mongodb');
-var ObjectId = require('mongodb').ObjectID;
 var mongodbUrl = 'mongodb://localhost:27017/trackbrowser';
 var assert = require('assert');
 
 var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
+
+// set static assets
+app.use(express.static('public'));
 
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -32,6 +34,19 @@ mkdirp(SCREENSHOT_STORE_PATH, function(err) {
 	}
 });
 
+var pictureArr;
+
+// read files from "pictures" directory
+var readImageFiles = function() {
+	fs.readdir("public/pictures", function(err, imageList) {
+		pictureArr = imageList;
+
+		console.log(pictureArr);
+	});
+};
+
+readImageFiles();
+
 var MongoClient = mongodb.MongoClient;
 
 MongoClient.connect(mongodbUrl, function(err, db) {
@@ -54,6 +69,10 @@ MongoClient.connect(mongodbUrl, function(err, db) {
 		});
 		
 		res.end("research-topic received");
+	});
+
+	app.get('/api/v1/picture/user/:id', function(req, res) {
+
 	});
 
 	// server alive check

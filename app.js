@@ -34,15 +34,21 @@ mkdirp(SCREENSHOT_STORE_PATH, function(err) {
 	}
 });
 
-var pictureArr;
+var picturesArr = null;
 
 // read files from "pictures" directory
 var readImageFiles = function() {
 	fs.readdir("public/pictures", function(err, imageList) {
-		pictureArr = imageList;
+		picturesArr = imageList;
 
-		console.log(pictureArr);
+		console.log(picturesArr);
 	});
+};
+
+var getRandomImageURLForUser = function(userId, callback) {
+	var imageIndex = Math.floor(Math.random() * picturesArr.length);
+
+	var imageURL = "http://52.32.246.19:8082/pictures/" + picturesArr[imageIndex];
 };
 
 readImageFiles();

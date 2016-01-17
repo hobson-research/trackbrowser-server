@@ -80,7 +80,9 @@ MongoClient.connect(mongodbUrl, function(err, db) {
 	app.get('/api/v1/picture/user/:id', function(req, res) {
 		console.log(req.params);
 
-		res.end("picture");
+		getRandomImageURLForUser(req.params.id, function(imageURL) {
+			res.end(imageURL);
+		});
 	});
 
 	// server alive check

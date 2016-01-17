@@ -1,0 +1,13 @@
+{
+	"name": "trackbrowser-server",
+	"version": "0.0.1",
+	"description": "A server to collect user data",
+	"dependencies": {
+		"express": "*",
+		"mongoose": "*",
+		"multer": "*",
+		"mkdirp": "*",
+		"body-parser": "*",
+		"mongodb": "*", 
+	}
+}

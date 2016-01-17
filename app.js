@@ -72,7 +72,9 @@ MongoClient.connect(mongodbUrl, function(err, db) {
 	});
 
 	app.get('/api/v1/picture/user/:id', function(req, res) {
+		console.log(req.params);
 
+		res.end("picture");
 	});
 
 	// server alive check

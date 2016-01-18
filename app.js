@@ -90,7 +90,8 @@ var init = function() {
 				console.log(dimensions.width, dimensions.height);
 
 				var returnObj = {
-					"url": "http://10.88.187.97:8082/pictures/" + fileName,
+					// "url": "http://10.88.187.97:8082/pictures/" + fileName,
+					"url": "http://52.32.246.19:8082/pictures/" + fileName,
 					"width": dimensions.width,
 					"height": dimensions.height
 				};

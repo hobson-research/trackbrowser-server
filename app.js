@@ -3,9 +3,11 @@ var app = express();
 var multer = require('multer');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
-var mongodb = require('mongodb');
-var mongodbUrl = 'mongodb://localhost:27017/trackbrowser';
+var sizeOf = require('image-size');
 var assert = require('assert');
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/trackbrowser');
 
 var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
 
@@ -24,9 +26,9 @@ var storage = multer.diskStorage({
 app.use(multer({ storage: storage }).single('imageAttachment'));
 
 /*
-		Check if user navigation data folder exists
-		and create one if not exists
-*/
+ Check if user navigation data folder exists
+ and create one if not exists
+ */
 mkdirp(SCREENSHOT_STORE_PATH, function(err) {
 	if (err) { console.log(err); }
 	else {
@@ -45,45 +47,58 @@ var readImageFiles = function() {
 	});
 };
 
-var getRandomImageURLForUser = function(userId, callback) {
+var getRandomImageForUser = function(userId, callback) {
 	var imageIndex = Math.floor(Math.random() * picturesArr.length);
 
-	var imageURL = "http://52.32.246.19:8082/pictures/" + picturesArr[imageIndex];
-
-	callback(imageURL);
+	callback(picturesArr[imageIndex]);
 };
 
 readImageFiles();
 
-var MongoClient = mongodb.MongoClient;
+// var MongoClient = mongodb.MongoClient;
 
-MongoClient.connect(mongodbUrl, function(err, db) {
-	assert.equal(null, err);
-	console.log("Connected correctly to MongoDB server.");
+var db = mongoose.connection;
+var init = function() {
+	console.log("init()");
 
 	// router
 	app.get('/', function(req, res) {
-		res.end("TrackBrowser Server");
+		res.end("TrackBrowser Dashboard");
 	});
-	
-	 // username, research topic
+
+	// username, research topic
 	app.post('/api/v1/researchtopic', function(req, res) {
 		console.log("/api/v1/researchtopic");
 		console.log(req.body);
-		
+
 		db.collection('research_topic').insertOne(req.body, function(err, result) {
-			assert.equal(err, null); 
-			console.log("Inserted research topic data to research_topic collection"); 
+			assert.equal(err, null);
+			console.log("Inserted research topic data to research_topic collection");
 		});
-		
+
 		res.end("research-topic received");
 	});
 
 	app.get('/api/v1/picture/user/:id', function(req, res) {
 		console.log(req.params);
 
-		getRandomImageURLForUser(req.params.id, function(imageURL) {
-			res.end(imageURL);
+		getRandomImageForUser(req.params.id, function(fileName) {
+			var imagePath = __dirname + '/public/pictures/' + fileName;
+			console.log(imagePath);
+
+			sizeOf(imagePath, function (err, dimensions) {
+				console.log(dimensions.width, dimensions.height);
+
+				var returnObj = {
+					"url": "http://10.88.187.97:8082/pictures/" + fileName,
+					"width": dimensions.width,
+					"height": dimensions.height
+				};
+
+				res.end(JSON.stringify(returnObj));
+			});
+
+
 		});
 	});
 
@@ -123,4 +138,11 @@ MongoClient.connect(mongodbUrl, function(err, db) {
 	app.listen(8082, function() {
 		console.log("Listening to port 8082");
 	});
+};
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+	console.log("Connected correctly to MongoDB server.");
+
+	init();
 });

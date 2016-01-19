@@ -66,19 +66,13 @@ var init = function() {
 		res.end("TrackBrowser Dashboard");
 	});
 
-	// username, research topic
-	app.post('/api/v1/researchtopic', function(req, res) {
-		console.log("/api/v1/researchtopic");
-		console.log(req.body);
-
-		db.collection('research_topic').insertOne(req.body, function(err, result) {
-			assert.equal(err, null);
-			console.log("Inserted research topic data to research_topic collection");
-		});
-
-		res.end("research-topic received");
+	// server alive check
+	app.get('/api/v1/echo', function(req, res) {
+		console.log("server echo back");
+		res.end("echo");
 	});
 
+	// retrieve picture to display
 	app.get('/api/v1/picture/user/:id', function(req, res) {
 		console.log(req.params);
 
@@ -90,8 +84,7 @@ var init = function() {
 				console.log(dimensions.width, dimensions.height);
 
 				var returnObj = {
-					// "url": "http://10.88.187.97:8082/pictures/" + fileName,
-					"url": "http://52.32.246.19:8082/pictures/" + fileName,
+					"url": "http://10.88.187.97:8082/pictures/" + fileName,
 					"width": dimensions.width,
 					"height": dimensions.height
 				};
@@ -103,10 +96,17 @@ var init = function() {
 		});
 	});
 
-	// server alive check
-	app.get('/api/v1/echo', function(req, res) {
-		console.log("server echo back");
-		res.end("echo");
+	// username, research topic
+	app.post('/api/v1/researchtopic', function(req, res) {
+		console.log("/api/v1/researchtopic");
+		console.log(req.body);
+
+		db.collection('research_topic').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted research topic data to research_topic collection");
+		});
+
+		res.end("research-topic received");
 	});
 
 	// user navigation
@@ -122,8 +122,19 @@ var init = function() {
 		res.end("browsing data");
 	});
 
+	// file download events
+	app.post('/api/v1/download', function(req, res) {
+		console.log("download complete event received from the client");
+		console.log(req.body);
+
+		 db.collection('file_download').insertOne(req.body, function(err, result) {
+			 assert.equal(err, null);
+			 console.log("Inserted file download details to file_download collection");
+		 });
+	});
+
 	// screenshot
-	app.post('/api/v1/screenshot', function (req, res) {
+	app.post('/api/v1/screenshot', function(req, res) {
 		console.log("screenshot received from client");
 
 		console.log(req.body);

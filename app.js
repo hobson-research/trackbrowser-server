@@ -204,7 +204,7 @@ var init = function() {
 	app.get('/api/v1/picture/user/:id', function(req, res) {
 		console.log(req.params);
 
-		getRandomImageForUser(req.params.id, function(fileName) {
+		getImageForUser(req.params.id, function(fileName) {
 			var imagePath = __dirname + '/public/pictures/' + fileName;
 			console.log(imagePath);
 

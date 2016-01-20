@@ -9,6 +9,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/trackbrowser';
+var db;
 
 var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
 
@@ -58,8 +59,7 @@ var getRandomImageForUser = function(userId, callback) {
 
 readImageFiles();
 
-// var MongoClient = mongodb.MongoClient;
-var init = function(db) {
+var init = function() {
 	console.log("init()");
 
 	// router
@@ -165,7 +165,10 @@ var init = function(db) {
 	});
 };
 
+MongoClient.connect(url, function(err, dbInstance) {
+	if (err) console.log("Error connecting to MongoDB database. ");
 
-MongoClient.connect(url, function(err, db) {
-	init(db);
+	db = dbInstance;
+
+	init();
 });

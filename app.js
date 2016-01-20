@@ -54,6 +54,19 @@ var getRandomImageForUser = function(userId, callback) {
 
 	var currentDate = new Date().toISOString().substring(0, 10);
 
+	var userPictureCollection = db.collection("user_data");
+
+	var cursor = userPictureCollection.findOne({_id: userName}, function(err, userPictureData) {
+		if (err) {
+			console.log("Error retrieving user picture data for id - " + userId);
+			console.log(err);
+
+			return;
+		}
+
+		console.log(userPictureData);
+	});
+
 	callback(picturesArr[imageIndex]);
 };
 

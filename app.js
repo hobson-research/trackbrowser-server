@@ -117,10 +117,21 @@ var init = function() {
 
 		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);
-			console.log("Inserted browsing data to browsing_data collection. ");
+			console.log("Inserted navigation data to browsing_data collection. ");
 		});
 
 		res.end("browsing data");
+	});
+
+	// scroll events
+	app.post('/api/v1/scroll', function(req, res) {
+		console.log("scroll");
+		console.log(req.body);
+
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted scroll data to browsing_data collection. ");
+		});
 	});
 
 	// file download events

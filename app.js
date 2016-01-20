@@ -40,40 +40,154 @@ mkdirp(SCREENSHOT_STORE_PATH, function(err) {
 
 var picturesArr = null;
 
+var checkIfPictureAtIndexExistsAndCreate = function(index) {
+	// if invalid index, begin at 0
+	if (typeof index !== "number") index = 0;
+
+	// if index is equal or larger than picturesArr length, stop recursive call
+	if (index >= picturesArr.length) return;
+
+	/*
+
+	 {
+	 fileName: "H1.png",
+	 users: ["1311", "1511", "11948"],
+	 userCount: 0
+	 },
+	 {
+	 fileName: "H2.jpg",
+	 users: ["1611", "1133", "1721"],
+	 userCount: 0
+	 }
+
+	 */
+
+	// find by fileName
+	db.collection("pictures").findOne(
+		{
+			fileName: picturesArr[index]
+		},
+		function(err, pictureData) {
+			if (err) {
+				console.log("Error retrieving picture data for " + picturesArr[index]);
+				console.log(err);
+
+				return;
+			}
+
+			// if picture data already exists,
+			// check next element in the array
+			if (pictureData !== null) {
+				checkIfPictureAtIndexExistsAndCreate(index + 1);
+			}
+
+			// if picture data doesn't exist,
+			// insert a item
+			else {
+				db.collection("pictures").insertOne({
+					fileName: picturesArr[index],
+					users: [],
+					userCount: 0
+				}, function(err, result) {
+					if (err) console.log("Error inserting a new picture item to database");
+
+					// continue to next element
+					checkIfPictureAtIndexExistsAndCreate(index + 1);
+				});
+			}
+		}
+	);
+};
+
 // read files from "pictures" directory
 var readImageFiles = function() {
 	fs.readdir("public/pictures", function(err, imageList) {
 		picturesArr = imageList;
 
-		console.log(picturesArr);
+		console.log("# of pictures: " + picturesArr.length);
+
+		// create database collection to record
+		// how many users each image has been served to
+		checkIfPictureAtIndexExistsAndCreate(0);
 	});
 };
 
-var getRandomImageForUser = function(userName, callback) {
-	var imageIndex = Math.floor(Math.random() * picturesArr.length);
-
+var getImageForUser = function(userName, callback) {
 	var currentDate = new Date().toISOString().substring(0, 10);
 
-	var userPictureCollection = db.collection("user_data");
+	var dailyPicturesCollection = db.collection("daily_user_pictures");
+	var picturesCollection = db.collection("pictures");
 
-	var cursor = userPictureCollection.findOne({_id: userName}, function(err, userPictureData) {
-		if (err) {
-			console.log("Error retrieving user picture data for id - " + userName);
-			console.log(err);
+	dailyPicturesCollection.findOne(
+		{
+			userName: userName,
+			date: currentDate
+		},
+		function(err, todayPictureData) {
+			if (err) {
+				console.log("Error retrieving today's picture data (" + currentDate + ")");
+				console.log(err);
 
-			return;
+				return;
+			}
+
+			// if the user
+			if (todayPictureData !== null) {
+				callback(todayPictureData.fileName);
+			}
+
+			else {
+				console.log("user does not have a picture selected yet for today");
+
+				var cursor = picturesCollection.find({
+					users: { $nin: [userName] }
+				}).sort({
+					userCount: -1
+				}).limit(1);
+
+				cursor.each(function(err, doc) {
+					if (err) {
+						// if error, do nothing
+						console.log(err);
+						return;
+					}
+
+					if (doc !== null) {
+						doc.users.push(userName);
+						doc.userCount++;
+
+						// update the record
+						picturesCollection.updateOne(
+							{"_id": doc._id},
+							{
+								$set: {
+									"users": doc.users,
+									"userCount": doc.userCount
+								}
+							}, function(err, results) {
+								dailyPicturesCollection.insertOne({
+									"date": currentDate,
+									"userName": userName,
+									"fileName": doc.fileName
+								}, function(err, results) {
+									console.log(results);
+
+									callback(doc.fileName);
+								});
+							}
+						);
+					}
+				});
+			}
 		}
-
-		console.log(userPictureData);
-	});
-
-	callback(picturesArr[imageIndex]);
-};
-
-readImageFiles();
+	);
+}
 
 var init = function() {
 	console.log("init()");
+
+	// read images into array and insert into database
+	readImageFiles();
 
 	// router
 	app.get('/', function(req, res) {

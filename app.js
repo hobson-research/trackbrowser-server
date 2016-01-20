@@ -131,6 +131,8 @@ var init = function() {
 		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);
 			console.log("Inserted scroll data to browsing_data collection. ");
+
+			res.end("scroll event record complete");
 		});
 	});
 

@@ -5,9 +5,10 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var sizeOf = require('image-size');
 var assert = require('assert');
-
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/trackbrowser');
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+var ObjectId = require('mongodb').ObjectID;
+var url = 'mongodb://localhost:27017/trackbrowser';
 
 var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
 
@@ -50,15 +51,15 @@ var readImageFiles = function() {
 var getRandomImageForUser = function(userId, callback) {
 	var imageIndex = Math.floor(Math.random() * picturesArr.length);
 
+	var currentDate = new Date().toISOString().substring(0, 10);
+
 	callback(picturesArr[imageIndex]);
 };
 
 readImageFiles();
 
 // var MongoClient = mongodb.MongoClient;
-
-var db = mongoose.connection;
-var init = function() {
+var init = function(db) {
 	console.log("init()");
 
 	// router
@@ -92,8 +93,6 @@ var init = function() {
 
 				res.end(JSON.stringify(returnObj));
 			});
-
-
 		});
 	});
 
@@ -166,9 +165,7 @@ var init = function() {
 	});
 };
 
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-	console.log("Connected correctly to MongoDB server.");
 
-	init();
+MongoClient.connect(url, function(err, db) {
+	init(db);
 });

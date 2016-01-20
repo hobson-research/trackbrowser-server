@@ -49,7 +49,7 @@ var readImageFiles = function() {
 	});
 };
 
-var getRandomImageForUser = function(userId, callback) {
+var getRandomImageForUser = function(userName, callback) {
 	var imageIndex = Math.floor(Math.random() * picturesArr.length);
 
 	var currentDate = new Date().toISOString().substring(0, 10);
@@ -58,7 +58,7 @@ var getRandomImageForUser = function(userId, callback) {
 
 	var cursor = userPictureCollection.findOne({_id: userName}, function(err, userPictureData) {
 		if (err) {
-			console.log("Error retrieving user picture data for id - " + userId);
+			console.log("Error retrieving user picture data for id - " + userName);
 			console.log(err);
 
 			return;
@@ -153,10 +153,10 @@ var init = function() {
 		console.log("download complete event received from the client");
 		console.log(req.body);
 
-		 db.collection('file_download').insertOne(req.body, function(err, result) {
-			 assert.equal(err, null);
-			 console.log("Inserted file download details to file_download collection");
-		 });
+		db.collection('file_download').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted file download details to file_download collection");
+		});
 	});
 
 	// screenshot

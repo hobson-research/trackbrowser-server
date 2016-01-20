@@ -4,7 +4,6 @@ var multer = require('multer');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var sizeOf = require('image-size');
-var assert = require('assert');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
@@ -142,7 +141,7 @@ var getImageForUser = function(userName, callback) {
 				var cursor = picturesCollection.find({
 					users: { $nin: [userName] }
 				}).sort({
-					userCount: -1
+					userCount: 1
 				}).limit(1);
 
 				cursor.each(function(err, doc) {

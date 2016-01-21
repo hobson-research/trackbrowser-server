@@ -4,6 +4,8 @@ var multer = require('multer');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var sizeOf = require('image-size');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
@@ -14,6 +16,7 @@ var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
 
 // set static assets
 app.use(express.static('public'));
+app.set('view engine', 'jade');
 
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -190,7 +193,7 @@ var init = function() {
 
 	// router
 	app.get('/', function(req, res) {
-		res.end("TrackBrowser Dashboard");
+		res.render('index', {});
 	});
 
 	// server alive check
@@ -286,7 +289,7 @@ var init = function() {
 		res.end("Response");
 	});
 
-	app.listen(8082, function() {
+	http.listen(8082, function() {
 		console.log("Listening to port 8082");
 	});
 };

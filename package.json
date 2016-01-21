@@ -10,6 +10,7 @@
 		"body-parser": "*",
 		"mongodb": "*",
 		"image-size": "*",
-		"socket.io": "*"
+		"socket.io": "*",
+		"jade": "*"
 	}
 }

@@ -11,6 +11,7 @@
 		"mongodb": "*",
 		"image-size": "*",
 		"socket.io": "*",
-		"jade": "*"
+		"jade": "*", 
+		"moment": "*"
 	}
 }

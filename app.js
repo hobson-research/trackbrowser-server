@@ -1,10 +1,10 @@
 var express = require('express');
 var app = express();
+var http = require('http').Server(app);
 var multer = require('multer');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var sizeOf = require('image-size');
-var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -17,6 +17,8 @@ var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
 // set static assets
 app.use(express.static('public'));
 app.set('view engine', 'jade');
+
+app.locals.moment = require('moment');
 
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -150,7 +152,7 @@ var getImageForUser = function(userName, callback) {
 				cursor.each(function(err, doc) {
 					if (err) {
 						// if error, do nothing
-						console.log(err);
+						console.log("Error retreiving pictures cursor");
 						return;
 					}
 
@@ -172,8 +174,6 @@ var getImageForUser = function(userName, callback) {
 									"userName": userName,
 									"fileName": doc.fileName
 								}, function(err, results) {
-									console.log(results);
-
 									callback(doc.fileName);
 								});
 							}
@@ -193,7 +193,19 @@ var init = function() {
 
 	// router
 	app.get('/', function(req, res) {
-		res.render('index', {});
+		db.collection("browsing_data")
+			.find()
+			.sort({'timestamp': -1})
+			.limit(100)
+			.toArray()
+			.then(function(documents) {
+				console.log("Returned " + documents.length + " browsing data");
+				console.log(documents); 
+				
+				res.render('index', {
+					"browsingDataArr": documents
+				});
+			});
 	});
 
 	// server alive check
@@ -214,7 +226,6 @@ var init = function() {
 				console.log(dimensions.width, dimensions.height);
 
 				var returnObj = {
-					// "url": "http://10.88.187.97:8082/pictures/" + fileName,
 					"url": "http://52.32.246.19:8082/pictures/" + fileName,
 					"width": dimensions.width,
 					"height": dimensions.height
@@ -230,7 +241,7 @@ var init = function() {
 		console.log("/api/v1/researchtopic");
 		console.log(req.body);
 
-		db.collection('research_topic').insertOne(req.body, function(err, result) {
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);
 			console.log("Inserted research topic data to research_topic collection");
 		});
@@ -269,9 +280,11 @@ var init = function() {
 		console.log("download complete event received from the client");
 		console.log(req.body);
 
-		db.collection('file_download').insertOne(req.body, function(err, result) {
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);
 			console.log("Inserted file download details to file_download collection");
+			
+			res.end("file download event record complete"); 
 		});
 	});
 

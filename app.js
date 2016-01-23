@@ -17,8 +17,7 @@ var SCREENSHOT_STORE_PATH = './data/userBrowsingData';
 // set static assets
 app.use(express.static('public'));
 app.set('view engine', 'jade');
-
-app.locals.moment = require('moment');
+app.locals.pretty = true;
 
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -138,9 +137,9 @@ var getImageForUser = function(userName, callback) {
 				return;
 			}
 
-			// if the user
+			// if the user data already exists
 			if (todayPictureData !== null) {
-				callback(todayPictureData.fileName);
+				callback(todayPictureData.fileName, false);
 			}
 
 			else {
@@ -177,7 +176,7 @@ var getImageForUser = function(userName, callback) {
 									"userName": userName,
 									"fileName": doc.fileName
 								}, function(err, results) {
-									callback(doc.fileName);
+									callback(doc.fileName, true);
 								});
 							}
 						);
@@ -193,16 +192,24 @@ var init = function() {
 
 	// read images into array and insert into database
 	readImageFiles();
+	
+	io.on('connection', function(socket) {
+		console.log("a new user viewing web UI connected"); 
+	});
 
 	// router
 	app.get('/', function(req, res) {
 		db.collection("browsing_data")
 			.find()
-			.sort({'timestamp': -1})
+			.sort({'_id': -1})
 			.limit(100)
 			.toArray()
 			.then(function(documents) {
 				console.log("Returned " + documents.length + " browsing data");
+				
+				for (var i = 0; i < documents.length; i++) {
+					console.log(documents[i].type); 
+				}
 				
 				res.render('index', {
 					"title": "TrackBrowser Browsing Data", 
@@ -226,7 +233,7 @@ var init = function() {
 	app.get('/api/v1/picture/user/:id', function(req, res) {
 		console.log(req.params);
 
-		getImageForUser(req.params.id, function(fileName) {
+		getImageForUser(req.params.id, function(fileName, isFirstTimeToday) {
 			var imagePath = __dirname + '/public/pictures/' + fileName;
 			console.log(imagePath);
 
@@ -238,8 +245,30 @@ var init = function() {
 					"width": dimensions.width,
 					"height": dimensions.height
 				};
-
-				res.end(JSON.stringify(returnObj));
+				
+				var returnObjJSON = JSON.stringify(returnObj); 
+				
+				// return picture information to participant
+				res.end(returnObjJSON);
+				
+				// create a date object to record to database
+				recordDate = new Date(); 
+				
+				// add datetime and username
+				returnObj.type = "picture-selection"; 
+				returnObj.fileName = fileName; 
+				returnObj.userName = req.params.id;
+				returnObj.isFirstTimeToday = isFirstTimeToday; 
+				returnObj.date = recordDate.toGMTString();
+				returnObj.timestamp = recordDate.getTime(); 
+				
+				db.collection('browsing_data').insertOne(returnObj, function(err, result) {
+					assert.equal(err, null); 
+					console.log("Inserted picture selection data to browsing_data collection"); 
+				});
+				
+				// broadcast picture select information
+				io.emit("new activity", returnObj); 
 			});
 		});
 	});
@@ -251,10 +280,14 @@ var init = function() {
 
 		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);
-			console.log("Inserted research topic data to research_topic collection");
+			console.log("Inserted research topic data to browsing_data collection");
 		});
-
-		res.end("research-topic received");
+		
+		// return response
+		res.end("research-topic received"); 
+		
+		// broadcast research topic information
+		io.emit("new activity", req.body); 
 	});
 
 	// user navigation
@@ -267,7 +300,11 @@ var init = function() {
 			console.log("Inserted navigation data to browsing_data collection. ");
 		});
 
+		// return response
 		res.end("browsing data");
+		
+		// broadcast research topic information
+		io.emit("new activity", req.body); 
 	});
 
 	// scroll events
@@ -278,9 +315,13 @@ var init = function() {
 		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);
 			console.log("Inserted scroll data to browsing_data collection. ");
-
-			res.end("scroll event record complete");
 		});
+		
+		// return response
+		res.end("scroll event record complete"); 
+		
+		// broadcast research topic information
+		io.emit("new activity", req.body); 
 	});
 
 	// file download events
@@ -293,6 +334,9 @@ var init = function() {
 			console.log("Inserted file download details to file_download collection");
 			
 			res.end("file download event record complete"); 
+			
+			// broadcast file download event
+			io.emit("new activity", req.body); 
 		});
 	});
 
@@ -308,6 +352,9 @@ var init = function() {
 		});
 
 		res.end("Response");
+		
+		// broadcast research topic information
+		io.emit("new activity", req.body); 
 	});
 
 	http.listen(8082, function() {

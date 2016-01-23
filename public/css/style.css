@@ -120,6 +120,14 @@ img {
 			font-weight: bold; 
 			padding-top: 14px;  
 			border-top: 1px solid #000;
+			
+		}
+		
+		#browsing-data p.desc {
+			color: #bbb; 
+			font-size: 16px;
+			line-height: 26px; 
+			margin-top: 10px; 
 			margin-bottom: 30px;  
 		}
 	
@@ -151,6 +159,14 @@ img {
 			
 			#browsing-data img.screenshot-thumbnail {
 				width: 400px; 
+			}
+			
+			#browsing-data img.screenshot-picture-display {
+				display: inline-block; 
+				border: 1px solid #aaa; 
+				width: 400px; 
+				margin-top: 6px; 
+				margin-bottom: 25px; 
 			}
 			
 		#browsing-data p.date {

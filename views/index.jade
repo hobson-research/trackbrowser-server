@@ -1,36 +1,24 @@
 html
 	head
-		title title
+		title= title
 
 		link(rel="stylesheet", href="http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css")
 		link(rel="stylesheet", href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css")
+		link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic")
 		link(rel="stylesheet", href="./css/typegrid.css")
 		link(rel="stylesheet", href="./css/style.css")
 
 		script(src='https://cdn.socket.io/socket.io-1.4.3.js')
 		script(src='./js/dataViewHandler.js')
-		script(type='text/javascript').
-			
-			var socket = io();
-			
-			
-			var init = function() {
-				
-			};
-			
-			document.addEventListener("DOMContentLoaded", function() {
-				// in case of a new activity
-				socket.on("new activity", function(activityJSON) {
-				
-				});
-			});
-			
 
 	body
 		section#browsing-data
 			.container
 				.desktop-12.columns
 					h2 Browsing Data
+					p.desc 100 latest activities are shown below. 
+						br
+						| Browsing data from TrackBrowser will be updated real-time.  
 				
 				.clear
 				
@@ -46,52 +34,60 @@ html
 				.desktop-7.columns
 					h3 Details
 				
-				each dataRow in browsingDataArr
-					.item
-						.desktop-2.columns
-							- var dateString = moment(dataRow.date).format('YYYY/MM/DD hh:mm:ss');
-							
-							p.date= dateString
-							
-						.desktop-1.columns
-							p.user= dataRow.userName
-							
-						.desktop-2.columns
-							p.event-type= dataRow.type
-							
-						.desktop-7.columns
-							- if (dataRow.type === "navigation")
-								p
-									| User navigated to <a href="#{dataRow.url}">#{dataRow.url}</a>. 
-							
-							- else if (dataRow.type === "screenshot")
-								p
-									| A screenshot was uploaded for page 
-									a(href="#{dataRow.url}") #{dataRow.url} 
+				#items-wrapper
+					each dataRow in browsingDataArr
+						.item
+							.desktop-2.columns
+								p.date= dataRow.date
 								
-								a.link-screenshot(href="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}")
-									img(src="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}").screenshot-thumbnail
-							
-							- else if (dataRow.type === "scroll")
-								p
-									| User scrolled in <a href="#{dataRow.url}">#{dataRow.url}</a>.
-							
-							- else if (dataRow.type === "research-topic")
-								p
-									| User has updated research topic. 
+							.desktop-1.columns
+								p.user= dataRow.userName
 								
-								h4 Research Topic
-								span= dataRow.researchType
+							.desktop-2.columns
+								p.event-type= dataRow.type
 								
-								h4 researchCompanies
-								span= dataRow.researchCompanies
+							.desktop-7.columns
+								- if (dataRow.type === "navigation")
+									p
+										| User navigated to <a href="#{dataRow.url}">#{dataRow.url}</a>. 
 								
-							- else if (dataRow.type === "file-download")
-								p
-									| User has downloaded file #{dataRow.fileName}. 
+								- else if (dataRow.type === "screenshot")
+									p
+										| A screenshot was uploaded for page 
+										a(href="#{dataRow.url}") #{dataRow.url}
+										| .
+									
+									a.link-screenshot(href="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}")
+										img(src="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}").screenshot-thumbnail
 								
-						
-						.clear
+								- else if (dataRow.type === "scroll")
+									p
+										| User scrolled in <a href="#{dataRow.url}">#{dataRow.url}</a>.
+								
+								- else if (dataRow.type === "research-topic")
+									p
+										| User has updated research topic. 
+									
+									h4 Research Topic
+									- if (dataRow.researchKey === "other") 
+										span= dataRow.researchType
+									- else
+										span Other (#{dataRow.researchTypeOtherReason})
+										
+									h4 Research Companies
+									span= dataRow.researchCompanies
+									
+								- else if (dataRow.type === "file-download")
+									p
+										| User has downloaded file #{dataRow.fileName}. 
+										
+								- else if (dataRow.type === "picture-selection")
+									p
+										| Daily picture has been selected. 
+									img(src="http://52.32.246.19:8082/pictures/#{dataRow.fileName}").screenshot-picture-display
+								
+								
+							.clear
 						
 						
 						

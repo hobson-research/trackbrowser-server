@@ -12,6 +12,5 @@
 		"image-size": "*",
 		"socket.io": "*",
 		"jade": "*", 
-		"moment": "*"
 	}
 }

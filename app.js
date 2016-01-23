@@ -116,6 +116,9 @@ var readImageFiles = function() {
 	});
 };
 
+// get daily image for user
+// if the daily image already exists for day, return that image
+// otherwise, find a new daily image
 var getImageForUser = function(userName, callback) {
 	var currentDate = new Date().toISOString().substring(0, 10);
 
@@ -200,12 +203,17 @@ var init = function() {
 			.toArray()
 			.then(function(documents) {
 				console.log("Returned " + documents.length + " browsing data");
-				console.log(documents); 
 				
 				res.render('index', {
+					"title": "TrackBrowser Browsing Data", 
 					"browsingDataArr": documents
 				});
 			});
+	});
+	
+	// return static screenshot file
+	app.get('/screenshot/:fileName', function(req, res) {
+		res.sendFile(__dirname + "/data/userBrowsingData/" + req.params.fileName); 
 	});
 
 	// server alive check

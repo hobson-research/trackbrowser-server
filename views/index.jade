@@ -3,15 +3,95 @@ html
 		title title
 
 		link(rel="stylesheet", href="http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css")
+		link(rel="stylesheet", href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css")
+		link(rel="stylesheet", href="./css/typegrid.css")
+		link(rel="stylesheet", href="./css/style.css")
 
 		script(src='https://cdn.socket.io/socket.io-1.4.3.js')
+		script(src='./js/dataViewHandler.js')
 		script(type='text/javascript').
+			
 			var socket = io();
-
-			setInterval(function() {
-				socket.emit('chat message', 'hello');
-			}, 1000);
+			
+			
+			var init = function() {
+				
+			};
+			
+			document.addEventListener("DOMContentLoaded", function() {
+				// in case of a new activity
+				socket.on("new activity", function(activityJSON) {
+				
+				});
+			});
+			
 
 	body
-		h1 message
-
+		section#browsing-data
+			.container
+				.desktop-12.columns
+					h2 Browsing Data
+				
+				.clear
+				
+				.desktop-2.columns
+					h3 Date
+				
+				.desktop-1.columns
+					h3 User
+				
+				.desktop-2.columns
+					h3 Event
+					
+				.desktop-7.columns
+					h3 Details
+				
+				each dataRow in browsingDataArr
+					.item
+						.desktop-2.columns
+							- var dateString = moment(dataRow.date).format('YYYY/MM/DD hh:mm:ss');
+							
+							p.date= dateString
+							
+						.desktop-1.columns
+							p.user= dataRow.userName
+							
+						.desktop-2.columns
+							p.event-type= dataRow.type
+							
+						.desktop-7.columns
+							- if (dataRow.type === "navigation")
+								p
+									| User navigated to <a href="#{dataRow.url}">#{dataRow.url}</a>. 
+							
+							- else if (dataRow.type === "screenshot")
+								p
+									| A screenshot was uploaded for page 
+									a(href="#{dataRow.url}") #{dataRow.url} 
+								
+								a.link-screenshot(href="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}")
+									img(src="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}").screenshot-thumbnail
+							
+							- else if (dataRow.type === "scroll")
+								p
+									| User scrolled in <a href="#{dataRow.url}">#{dataRow.url}</a>.
+							
+							- else if (dataRow.type === "research-topic")
+								p
+									| User has updated research topic. 
+								
+								h4 Research Topic
+								span= dataRow.researchType
+								
+								h4 researchCompanies
+								span= dataRow.researchCompanies
+								
+							- else if (dataRow.type === "file-download")
+								p
+									| User has downloaded file #{dataRow.fileName}. 
+								
+						
+						.clear
+						
+						
+						

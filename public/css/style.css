@@ -1,0 +1,168 @@
+/*--------------------------------------------------------------------------
+	1. Body
+--------------------------------------------------------------------------*/
+
+html {
+}
+
+body {
+	color: #000;
+	font-size: 16px;
+	line-height: 26px;
+	font-family: "Roboto", sans-serif;
+	font-weight: 400; 
+	-webkit-font-smoothing: antialiased;
+  	/* Fix for webkit rendering */
+	-webkit-text-size-adjust: 100%;
+	position: relative; 
+}
+
+	@media screen and (max-width: 767px) {
+		body {
+			font-size: 17px;
+			line-height: 32px;
+		}
+	}
+
+
+/*--------------------------------------------------------------------------
+	2. Typography
+--------------------------------------------------------------------------*/
+
+/* Links */
+a {
+	color: #000;
+	text-decoration: none;
+	outline: 0;
+}
+
+a:hover,
+a:focus {
+	color: #000;
+}
+
+/* Visibility */
+.hide {
+	display: none !important;
+}
+
+/* Highlighted Text */
+::selection {
+	background: #9e5bea;
+	color: #000;
+	text-shadow: none;
+}
+
+/* Firefox */
+::-moz-selection {
+	background: #9e5bea;
+	color: #000;
+	text-shadow: none;
+}
+
+::-webkit-input-placeholder {
+   color: #ccc;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: #ccc;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: #ccc; 
+}
+
+:-ms-input-placeholder {  
+   color: #ccc;
+}
+
+em,
+.italic {
+	font-style: italic;
+}
+
+strong,
+.bold {
+	font-weight: bold;
+}
+
+.align-center {
+	text-align: center; 
+}
+
+img {
+	max-width: 100%; 
+}
+
+
+/*--------------------------------------------------------------------------
+	3. Page Sections
+--------------------------------------------------------------------------*/
+
+
+	/*----------------------------------------------------------
+		3.1. Header
+	-----------------------------------------------------------*/
+
+	#header {
+		
+	}
+
+	#browsing-data {
+		font-size: 13px; 
+		line-height: 23px; 
+		padding: 40px 0; 
+	}
+	
+		#browsing-data h2 {
+			font-size: 26px; 
+			line-height: 26px; 
+			font-weight: bold; 
+			padding-top: 14px;  
+			border-top: 1px solid #000;
+			margin-bottom: 30px;  
+		}
+	
+		#browsing-data h3 {
+			font-weight: bold; 
+			padding: 6px 0; 
+			border-top: 1px solid #000; 
+		}
+
+		#browsing-data .item {
+			margin: 6px 0; 
+		}
+
+		#browsing-data a {
+			color: #9e5bea; 
+		}
+		
+			#browsing-data a:hover {
+				color: #7e3bca; 
+			}
+			
+			#browsing-data a.link-screenshot {
+				display: inline-block; 
+				border: 1px solid #aaa; 
+				line-height: 0; 
+				margin-top: 6px; 
+				margin-bottom: 25px; 
+			}
+			
+			#browsing-data img.screenshot-thumbnail {
+				width: 400px; 
+			}
+			
+		#browsing-data p.date {
+			white-space: nowrap; 
+		}
+		
+		#browsing-data h4 {
+			font-weight: bold; 
+		}
+
+
+
+
+
+

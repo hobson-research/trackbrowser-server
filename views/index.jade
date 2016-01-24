@@ -74,10 +74,10 @@ html
 										| User has updated research topic. 
 									
 									h4 Research Topic
-									- if (dataRow.researchKey === "other") 
-										span= dataRow.researchType
-									- else
+									- if (dataRow.researchTypeKey === "other") 
 										span Other (#{dataRow.researchTypeOtherReason})
+									- else
+										span= dataRow.researchType
 										
 									h4 Research Companies
 									span= dataRow.researchCompanies

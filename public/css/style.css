@@ -123,6 +123,27 @@ img {
 			
 		}
 		
+		#browsing-data a.button {
+			text-align: center; 
+			display: block;
+			color: #fff; 
+			background: #9e5bea; 
+			font-size: 16px; 
+			line-height: 16px; 
+			padding: 26px 20px 24px 20px;  
+			border-bottom: 4px solid #7e3bca; 
+			border-radius: 4px; 
+		}
+		
+			#browsing-data a.button:hover {
+				color: #fff; 
+				background: #7e3bca; 
+			}
+		
+			#browsing-data a.button i.icon {
+				padding-right: 10px; 
+			}
+		
 		#browsing-data p.desc {
 			color: #bbb; 
 			font-size: 16px;

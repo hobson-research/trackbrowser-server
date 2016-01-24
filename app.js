@@ -6,9 +6,11 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var sizeOf = require('image-size');
 var io = require('socket.io')(http);
+var json2csv = require('json2csv'); 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
+
 var url = 'mongodb://localhost:27017/trackbrowser';
 var db;
 
@@ -187,9 +189,87 @@ var getImageForUser = function(userName, callback) {
 	);
 }
 
-var init = function() {
-	console.log("init()");
+var exportBrowsingDocsToCSV = function(docs, res) {
+	var fields = ['date', 'user', 'event', 'details', 'url']; 
+	var browsingData = []; 
+	
+	for (var i = 0; i < docs.length; i++) {
+		var doc = docs[i];
+		var details = "";
+		
+		if (doc.type === "navigation") {
+			details += doc.url; 
+		}
+		
+		else if (doc.type === "screenshot") {
+			details += "Screenshot file " + doc.fileName + " was uploaded for " + doc.url; 
+		}
+		
+		else if (doc.type === "scroll") {
+			details += "User " + doc.userName + " scrolled in " + doc.url; 
+		}
+		
+		else if (doc.type === "research-topic") {
+			details += "Research Type: "; 
+			
+			if (doc.researchTypeKey !== "other") {
+				details += doc.researchType; 
+			} else {
+				details += "Others: " + doc.researchTypeOtherReason; 
+			}
+			
+			details += ", Research Companies: "; 
+			details += doc.researchCompanies; 
+		}
+		
+		else if (doc.type === "picture-selection") {
+			details += "Picture " + doc.fileName + " was selected for user " + doc.userName; 
+			
+			if (doc.isFirstTimeToday === true) {
+				details += " (first connection during the day)"; 
+			}
+			
+			details += "."; 
+		}
+		
+		else if (doc.type === "file-download") {
+			details += "User " + doc.userName + " downloaded " + doc.fileName + " (file type: " + doc.fileMimeType + ")."; 
+		}
+		
+		else { 
+		}
+		
+		browsingData.push({
+			"date": doc.date, 
+			"user": doc.userName, 
+			"event": doc.type, 
+			"details": details, 
+			"url": doc.url
+		});
+	}
+	
+	var exportDateStr = new Date().toISOString().substr(0, 10).replace(/-/g, "_");  
+	var exportFileName = "trackbrowser_data" + "_" + exportDateStr + ".csv"; 
+	var exportFilePath =  __dirname + "/data/" + exportFileName; 
+	
+	json2csv({ data: browsingData, fields: fields }, function(err, csv) {
+		if (err) {
+			console.log(err); 
+			return; 
+		}
+		
+		fs.writeFile(exportFilePath, csv, function(err) {
+			if (err) {
+				console.log("error exporting csv file in exportBrowsingDocsToCSV()"); 
+			}
+			
+			console.log("file exported"); 
+			res.download(exportFilePath); 
+		});
+	});
+};
 
+var init = function() {
 	// read images into array and insert into database
 	readImageFiles();
 	
@@ -207,14 +287,25 @@ var init = function() {
 			.then(function(documents) {
 				console.log("Returned " + documents.length + " browsing data");
 				
-				for (var i = 0; i < documents.length; i++) {
-					console.log(documents[i].type); 
-				}
-				
 				res.render('index', {
 					"title": "TrackBrowser Browsing Data", 
 					"browsingDataArr": documents
 				});
+			});
+	});
+	
+	app.get('/export/csv', function(req, res) {
+		db.collection("browsing_data")
+			.find()
+			.sort({'_id': 1})
+			.toArray(function(err, docs) {
+				if (err) {
+					// do nothing
+					console.log("error retrieving all browsing data while exporting csv"); 
+					return; 
+				}
+				
+				exportBrowsingDocsToCSV(docs, res); 
 			});
 	});
 	
@@ -294,6 +385,10 @@ var init = function() {
 	app.post('/api/v1/browsingdata', function(req, res) {
 		console.log("browsing-data");
 		console.log(req.body);
+		
+		if (req.body.url.endsWith("resources/app/html-pages/new-tab.html")) {
+			req.body.url = "New Tab"; 
+		}
 
 		db.collection('browsing_data').insertOne(req.body, function(err, result) {
 			assert.equal(err, null);

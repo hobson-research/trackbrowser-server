@@ -45,6 +45,25 @@ mkdirp(SCREENSHOT_STORE_PATH, function(err) {
 
 var picturesArr = null;
 
+var shuffleArray = function(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}; 
+
 var checkIfPictureAtIndexExistsAndCreate = function(index) {
 	// if invalid index, begin at 0
 	if (typeof index !== "number") index = 0;
@@ -53,7 +72,6 @@ var checkIfPictureAtIndexExistsAndCreate = function(index) {
 	if (index >= picturesArr.length) return;
 
 	/*
-
 	 {
 	 fileName: "H1.png",
 	 users: ["1311", "1511", "11948"],
@@ -108,6 +126,8 @@ var checkIfPictureAtIndexExistsAndCreate = function(index) {
 var readImageFiles = function() {
 	fs.readdir("public/pictures", function(err, imageList) {
 		picturesArr = imageList;
+		
+		shuffleArray(picturesArr); 
 
 		console.log("# of pictures: " + picturesArr.length);
 

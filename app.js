@@ -241,6 +241,12 @@ var exportBrowsingDocsToCSV = function(docs, res) {
 			details += ", Research Companies: "; 
 			details += doc.researchCompanies; 
 		}
+
+		else if (doc.type === "tracking-status") {
+			var isTrackingOnStr = (doc.isTrackingOn == 'true') ? "on" : "off";
+
+			details += 'User has turned tracking status ' + isTrackingOnStr + '.';
+		}
 		
 		else if (doc.type === "picture-selection") {
 			details += "Picture " + doc.fileName + " was selected for user " + doc.userName; 

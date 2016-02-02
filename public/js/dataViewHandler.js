@@ -73,7 +73,7 @@ function DataViewHandler() {
 				isTrackingOnStr = "off";
 			}
 
-			newItemInnerHTML += '<p>User has turned tracking status ' + isTrackingOnStr + '.</p>'
+			newItemInnerHTML += '<p>User has turned ' + isTrackingOnStr + ' tracking status.</p>'
 		}
 
 			

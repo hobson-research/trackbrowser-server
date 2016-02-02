@@ -245,7 +245,7 @@ var exportBrowsingDocsToCSV = function(docs, res) {
 		else if (doc.type === "tracking-status") {
 			var isTrackingOnStr = (doc.isTrackingOn == 'true') ? "on" : "off";
 
-			details += 'User has turned tracking status ' + isTrackingOnStr + '.';
+			details += 'User has turned ' + isTrackingOnStr + ' tracking status.';
 		}
 		
 		else if (doc.type === "picture-selection") {

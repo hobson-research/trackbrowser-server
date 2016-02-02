@@ -63,6 +63,19 @@ function DataViewHandler() {
 			
 			newItemInnerHTML += '<p>User has updated research topic. </p><h4>Research Topic</h4><span>' + researchTopicStr + '</span><h4>Research Companies</h4><span>' + activity.researchCompanies + '</span>';
 		}
+
+		else if (activity.type === "tracking-status") {
+			var isTrackingOnStr;
+
+			if (activity.isTrackingOn == 'true') {
+				isTrackingOnStr = "on";
+			} else {
+				isTrackingOnStr = "off";
+			}
+
+			newItemInnerHTML += '<p>User has turned tracking status ' + isTrackingOnStr + '.</p>'
+		}
+
 			
 		else if (activity.type === "file-download") {
 			newItemInnerHTML += '<p>User has downloaded file ' + activity.fileName + '. </p>';
@@ -92,11 +105,11 @@ function DataViewHandler() {
 		
 		for (var i = 0; i < activityItemDateEls.length; i++) {
 			activityItemDateEls[i].textContent = getLocaleStringFromGMTFormat(activityItemDateEls[i].textContent);
-		};
+		}
 	};
 	
 	init(); 
-};
+}
 
 document.addEventListener("DOMContentLoaded", function() {
 	// initialize dataViewHandler

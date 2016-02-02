@@ -81,6 +81,11 @@ html
 										
 									h4 Research Companies
 									span= dataRow.researchCompanies
+
+								- else if (dataRow.type === "tracking-status")
+									- var isTrackingOnStr = (dataRow.isTrackingOn == 'true') ? "on" : "off";
+									p
+										| User has turned #{isTrackingOnStr} tracking status.
 									
 								- else if (dataRow.type === "file-download")
 									p

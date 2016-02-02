@@ -207,7 +207,7 @@ var getImageForUser = function(userName, callback) {
 			}
 		}
 	);
-}
+};
 
 var exportBrowsingDocsToCSV = function(docs, res) {
 	var fields = ['date', 'user', 'event', 'details', 'url']; 
@@ -470,6 +470,23 @@ var init = function() {
 		
 		// broadcast research topic information
 		io.emit("new activity", req.body); 
+	});
+
+	// tracking status change
+	app.post('/api/v1/tracking-status', function(req, res) {
+		console.log("tracking-status change event received from client");
+
+		console.log(req.body);
+
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted tracking status change event to browsing-data collection. ");
+		});
+
+		// broadcast tracking status change event
+		res.end("Response");
+
+		io.emit("new activity", req.body);
 	});
 
 	http.listen(8082, function() {

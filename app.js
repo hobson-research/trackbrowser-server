@@ -432,6 +432,23 @@ var init = function() {
 		io.emit("new activity", req.body); 
 	});
 
+	// click
+	app.post('/api/v1/click', function(req, res) {
+		console.log("click event received from client");
+		console.log(req.body);
+
+
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted click data to browsing-data collection. ");
+		});
+
+		res.end("Response");
+
+		// broadcast research topic information
+		io.emit("new activity", req.body);
+	});
+
 	// scroll events
 	app.post('/api/v1/scroll', function(req, res) {
 		console.log("scroll");
@@ -463,23 +480,6 @@ var init = function() {
 			// broadcast file download event
 			io.emit("new activity", req.body); 
 		});
-	});
-
-	// click
-	app.post('/api/v1/click', function(req, res) {
-		console.log("click event received from client");
-
-		console.log(req.body);
-
-		db.collection('browsing_data').insertOne(req.body, function(err, result) {
-			assert.equal(err, null);
-			console.log("Inserted click data to browsing-data collection. ");
-		});
-
-		res.end("Response");
-
-		// broadcast research topic information
-		io.emit("new activity", req.body);
 	});
 
 	// screenshot

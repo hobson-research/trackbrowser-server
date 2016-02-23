@@ -47,13 +47,13 @@ function DataViewHandler() {
 			
 			newItemInnerHTML += '<p>A screenshot was uploaded for page <a href="' + activity.url + '">' + activity.url + '</a>.</p><a href="' + screenshotURL + '" class="link-screenshot"><img src="' + screenshotURL + '" class="screenshot-thumbnail"/></a>'; 
 		}
-		
-		else if (activity.type === "scroll") {
-			newItemInnerHTML += '<p>User scrolled in <a href="' + activity.url + '">' + activity.url + '</a>.</p>'; 
-		}
 
 		else if (activity.type === "click") {
 			newItemInnerHTML += '<p>User clicked in <a href="' + activity.url + '">' + activity.url + '</a>.</p>';
+		}
+		
+		else if (activity.type === "scroll") {
+			newItemInnerHTML += '<p>User scrolled in <a href="' + activity.url + '">' + activity.url + '</a>.</p>'; 
 		}
             
 		else if (activity.type === "research-topic") {

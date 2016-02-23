@@ -64,7 +64,11 @@ html
 									
 									a.link-screenshot(href="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}")
 										img(src="http://52.32.246.19:8082/screenshot/#{dataRow.fileName}").screenshot-thumbnail
-								
+
+								- else if (dataRow.type === "click")
+									p
+										| User clicked in <a href="#{dataRow.url}">#{dataRow.url}</a>.
+
 								- else if (dataRow.type === "scroll")
 									p
 										| User scrolled in <a href="#{dataRow.url}">#{dataRow.url}</a>.

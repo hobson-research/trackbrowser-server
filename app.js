@@ -228,6 +228,10 @@ var exportBrowsingDocsToCSV = function(docs, res) {
 		else if (doc.type === "scroll") {
 			details += "User " + doc.userName + " scrolled in " + doc.url; 
 		}
+
+		else if (doc.type === "click") {
+			details += "User " + doc.userName + " clicked in " + doc.url;
+		}
 		
 		else if (doc.type === "research-topic") {
 			details += "Research Type: "; 
@@ -459,6 +463,23 @@ var init = function() {
 			// broadcast file download event
 			io.emit("new activity", req.body); 
 		});
+	});
+
+	// click
+	app.post('/api/v1/click', function(req, res) {
+		console.log("click event received from client");
+
+		console.log(req.body);
+
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted click data to browsing-data collection. ");
+		});
+
+		res.end("Response");
+
+		// broadcast research topic information
+		io.emit("new activity", req.body);
 	});
 
 	// screenshot

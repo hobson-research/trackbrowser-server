@@ -51,6 +51,10 @@ function DataViewHandler() {
 		else if (activity.type === "scroll") {
 			newItemInnerHTML += '<p>User scrolled in <a href="' + activity.url + '">' + activity.url + '</a>.</p>'; 
 		}
+
+		else if (activity.type === "click") {
+			newItemInnerHTML += '<p>User clicked in <a href="' + activity.url + '">' + activity.url + '</a>.</p>';
+		}
             
 		else if (activity.type === "research-topic") {
 			var researchTopicStr = ""; 

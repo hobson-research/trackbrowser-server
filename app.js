@@ -234,7 +234,7 @@ var exportBrowsingDocsToCSV = function(docs, res) {
 		}
 
 		else if (doc.type === "input") {
-			details += "User typed " + doc.inputValue + " into an " + doc.type + " element (id: " + doc.inputId + ", name: " + doc.name + ") in " + doc.url;
+			details += "User typed " + doc.inputValue + " into an " + doc.inputType + " element (id: " + doc.inputId + ", name: " + doc.inputName + ") in " + doc.url;
 		}
 		
 		else if (doc.type === "research-topic") {

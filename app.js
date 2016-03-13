@@ -232,6 +232,10 @@ var exportBrowsingDocsToCSV = function(docs, res) {
 		else if (doc.type === "click") {
 			details += "User " + doc.userName + " clicked in " + doc.url;
 		}
+
+		else if (doc.type === "input") {
+			details + "User typed " + doc.inputValue + " into an " + doc.type + " element (id: " + doc.inputId + ", name: " + doc.name + ") in " + doc.url;
+		}
 		
 		else if (doc.type === "research-topic") {
 			details += "Research Type: "; 
@@ -464,6 +468,23 @@ var init = function() {
 		
 		// broadcast research topic information
 		io.emit("new activity", req.body); 
+	});
+
+	// input events
+	app.post('/api/v1/input', function(req, res) {
+		console.log("input");
+		console.log(req.body);
+
+		db.collection('browsing_data').insertOne(req.body, function(err, result) {
+			assert.equal(err, null);
+			console.log("Inserted input data to browsing_data collection. ");
+		});
+
+		// return response
+		res.end("input event record complete");
+
+		// broadcast research topic information
+		io.emit("new activity", req.body);
 	});
 
 	// file download events
